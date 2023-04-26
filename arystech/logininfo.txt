@@ -1,0 +1,10 @@
+if (usuario == "margarita" && contra == "1234") {
+                window.location.href = "margarita.html";
+            } else if (usuario == "aryshospital" && contra == "1234") {
+                window.location.href = "abuelos.html";
+            } else if (usuario == "ofelia" && contra == "1234") {
+                window.location.href = "ofelia.html";
+            }
+            else {
+                alert("Usuario no registrado");
+            }

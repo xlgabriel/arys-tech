@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Ary's Tech</title>
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
+</head>
+<section>
+    <div class="bg"></div>
+    <header>
+        <a href="#" class="logo">Ary's Tech</a>
+        <div class="toggle"></div>
+        <ul class="navigation">
+            <li><a href="inicioH.html">Inicio</a></li>
+            <li><a href="abuelos.html" class="active">Pacientes</a></li>
+            <li><a href="index.html">Cerrar Sesión</a></li>
+        </ul>
+    </header>
+    <div class="content">
+        <div class="textBox">
+            <h2 id="name">MARGARITA DÍAZ</h2>
+            <ul class="datos">
+                <li><b>Frecuencia cardíaca:</b>
+                    <h3 class="freq"></h3>
+                </li>
+                <li><b>Estado de caída:</b>
+                    <h3 class="alert"></h3>
+                </li>
+            </ul>
+        </div>
+        <div class="imgBox">
+            <img src="imagenes/abuela1.jpg" class="image">
+        </div>
+    </div>
+    <ul class="thumb">
+        <div class="active">
+            <li data-text="uno" onclick="imgSlider('imagenes/abuela1.jpg');txtName('MARGARITA DÍAZ');Escoger('Margarita')">1</li>
+        </div>
+        <div>
+            <li data-text="dos" onclick="imgSlider('imagenes/abuelo1.jpg');txtName('ROBERTO MENDEZ');Escoger('Roberto')">2</li>
+        </div>
+        <div>
+            <li data-text="tres" onclick="imgSlider('imagenes/abuela2.jpg');txtName('OFELIA CARDENAS');Escoger('Ofelia')">3</li>
+        </div>
+    </ul>
+</section>
+<script>
+
+    //Estilos
+
+    //nav
+    let menuToggle = document.querySelector('.toggle');
+    let menuNav = document.querySelector('.navigation');
+    menuToggle.onclick = function(){
+        menuToggle.classList.toggle('active');
+        menuNav.classList.toggle('active');
+    }
+    //nombre
+    function txtName(anything) {
+        document.getElementById("name").innerHTML = anything;
+    }
+    //imagenes
+    function imgSlider(anything) {
+        document.querySelector('.image').src = anything;
+    }
+    //numeros
+    let el = document.querySelectorAll('.thumb div');
+    for (let i = 0; i < el.length; i++) {
+        el[i].onclick = function () {
+            var c = 0;
+            while (c < el.length) {
+                el[c++].className = 'check';
+            }
+            el[i].className = 'check active';
+        }
+    }
+
+
+    //Recibir datos
+
+    //Rutas
+    const rutaMQTT1 = "http://industrial.api.ubidots.com/api/v1.6/devices/lectumqtt/pulso/lv?token=BBFF-gXoT68ph5PY8Vfavd3YC66REF779Dc";
+    const rutaMQTT2 = "http://industrial.api.ubidots.com/api/v1.6/devices/lectumqtt/alerta/lv?token=BBFF-gXoT68ph5PY8Vfavd3YC66REF779Dc";
+
+    const rutaREST1 = "http://industrial.api.ubidots.com/api/v1.6/devices/lectupostman/pulso/lv?token=BBFF-uW1VPbr3eAWBLjwkBjVIjoMKYE8ft5";
+    const rutaREST2 = "http://industrial.api.ubidots.com/api/v1.6/devices/lectupostman/alerta/lv?token=BBFF-uW1VPbr3eAWBLjwkBjVIjoMKYE8ft5";
+
+    const rutaHardware1 = "http://industrial.api.ubidots.com/api/v1.6/devices/lectuhardware/pulso/lv?token=BBFF-Vz97uSHeMba37DFZITEUNjCcS5r5Fb";
+    const rutaHardware2 = "http://industrial.api.ubidots.com/api/v1.6/devices/lectuhardware/alerta/lv?token=BBFF-Vz97uSHeMba37DFZITEUNjCcS5r5Fb";
+
+    const evento = new XMLHttpRequest();
+    const evento1 = new XMLHttpRequest();
+
+    function OnRequestHandler() {
+        //frecuencia
+        const datofreq = parseInt(this.response);
+        const HTMLResponse = document.querySelector(".freq");
+        HTMLResponse.innerHTML = `<h3>${datofreq} RPM</h3>`;
+    }
+
+    function OnRequestHandler1() {
+        
+        //alerta
+        const datoalert = parseInt(this.response);
+        const HTMLResponse = document.querySelector(".alert");
+        if(datoalert==0){
+            HTMLResponse.innerHTML = `<h3>Hasta ahora no se ha presentado una caída</h3>`;
+        }else if(datoalert==1){
+            HTMLResponse.innerHTML = `<h3>Posible caída</h3>`;
+        }
+    }
+
+    evento.addEventListener('load', OnRequestHandler)
+    evento.open('GET', rutaMQTT1)
+    evento.send();
+
+    evento1.addEventListener('load', OnRequestHandler1)
+    evento1.open('GET', rutaMQTT2)
+    evento1.send();
+
+    function Escoger(anything) {
+        if (anything === "Margarita") {
+            evento.addEventListener('load', OnRequestHandler)
+            evento.open('GET', rutaMQTT1)
+            evento.send();
+
+            evento1.addEventListener('load', OnRequestHandler1)
+            evento1.open('GET', rutaMQTT2)
+            evento1.send();
+        }
+        if (anything === "Roberto") {
+            evento.addEventListener('load', OnRequestHandler)
+            evento.open('GET', rutaREST1)
+            evento.send();
+
+            evento1.addEventListener('load', OnRequestHandler1)
+            evento1.open('GET', rutaREST2)
+            evento1.send();
+        }
+        if (anything === "Ofelia") {
+            evento.addEventListener('load', OnRequestHandler)
+            evento.open('GET', rutaHardware1)
+            evento.send();
+
+            evento1.addEventListener('load', OnRequestHandler1)
+            evento1.open('GET', rutaHardware2)
+            evento1.send();
+        }
+    }
+
+</script>
+
+</html>

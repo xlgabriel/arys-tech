@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Ary's Tech</title>
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
+</head>
+<section>
+    <div class="bg"></div>
+    <header>
+        <a href="#" class="logo">Ary's Tech</a>
+        <div class="toggle"></div>
+        <ul class="navigation">
+            <li><a href="ofelia.html" class="active">Estado</a></li>
+            <li><a href="index.html">Cerrar Sesión</a></li>
+        </ul>
+    </header>
+    <div class="content">
+        <div class="textBox">
+            <h2 id="name">OFELIA CARDENAS</h2>
+            <ul class="datos">
+                <li><b>Frecuencia cardíaca:</b>
+                    <h3 class="freq"></h3>
+                </li>
+                <li><b>Estado de caída:</b>
+                    <h3 class="alert"></h3>
+                </li>
+            </ul>
+        </div>
+        <div class="imgBox">
+            <img src="imagenes/abuela2.jpg" class="image">
+        </div>
+    </div>
+</section>
+<script>
+    //Recibir datos
+
+    //Rutas
+    const rutaMQTT1 = "http://industrial.api.ubidots.com/api/v1.6/devices/lectumqtt/pulso/lv?token=BBFF-gXoT68ph5PY8Vfavd3YC66REF779Dc";
+    const rutaMQTT2 = "http://industrial.api.ubidots.com/api/v1.6/devices/lectumqtt/alerta/lv?token=BBFF-gXoT68ph5PY8Vfavd3YC66REF779Dc";
+
+    const evento = new XMLHttpRequest();
+    const evento1 = new XMLHttpRequest();
+
+    function OnRequestHandler() {
+        //frecuencia
+        const datofreq = parseInt(this.response);
+        const HTMLResponse = document.querySelector(".freq");
+        HTMLResponse.innerHTML = `<h3>${datofreq} RPM</h3>`;
+
+        //alerta
+        const datoalert = parseInt(this.response);
+        const HTMLResponse1 = document.querySelector(".alert");
+        if(datoalert==0){
+            HTMLResponse1.innerHTML = `<h3>Hasta ahora no se ha presentado una caída</h3>`;
+        }else if(datoalert==1){
+            HTMLResponse1.innerHTML = `<h3>Posible caída</h3>`;
+        }
+    }
+
+    function OnRequestHandler1() {
+        
+        //alerta
+        const datoalert = parseInt(this.response);
+        const HTMLResponse = document.querySelector(".alert");
+        if(datoalert==0){
+            HTMLResponse.innerHTML = `<h3>Hasta ahora no se ha presentado una caída</h3>`;
+        }else if(datoalert==1){
+            HTMLResponse.innerHTML = `<h3>Posible caída</h3>`;
+        }
+    }
+
+    evento.addEventListener('load', OnRequestHandler)
+    evento.open('GET', rutaMQTT1)
+    evento.send();
+
+    evento1.addEventListener('load', OnRequestHandler1)
+    evento1.open('GET', rutaMQTT2)
+    evento1.send();
+
+</script>
+
+</html>
